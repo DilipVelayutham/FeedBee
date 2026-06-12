@@ -79,6 +79,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/logo/feedbee_logo1.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -113,4 +115,4 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/logo/feedbee_logo.png"
+  image_path: "assets/logo/feedbee_logo1.png"

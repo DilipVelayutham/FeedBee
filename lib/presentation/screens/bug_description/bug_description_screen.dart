@@ -71,22 +71,12 @@ class _BugDescriptionScreenState
         backgroundColor:
             AppColors.background,
         elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "Issue Details",
-          style: TextStyle(
-            color:
-                AppColors.textPrimary,
-            fontWeight:
-                FontWeight.w600,
-          ),
-        ),
       ),
 
       body: SafeArea(
         child: Form(
           key: _formKey,
-          child: Padding(
+          child: SingleChildScrollView(
             padding:
                 const EdgeInsets.all(24),
             child: Column(
@@ -103,60 +93,113 @@ class _BugDescriptionScreenState
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
 
-                ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(
-                    10,
-                  ),
-                  child:
-                      const LinearProgressIndicator(
-                    value: 0.50,
-                    minHeight: 8,
-                    backgroundColor:
-                        Color(
-                      0xFFEAEAEA,
-                    ),
-                    color:
-                        AppColors.primary,
-                  ),
+                Row(
+                  children: [
+                    _stepCircle(true),
+                    _stepLine(true),
+                    _stepCircle(true),
+                    _stepLine(false),
+                    _stepCircle(false),
+                    _stepLine(false),
+                    _stepCircle(false),
+                  ],
                 ),
 
                 const SizedBox(height: 30),
 
-                const Text(
-                  "Describe the issue",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight:
-                        FontWeight.bold,
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.all(
+                    24,
+                  ),
+                  decoration:
+                      BoxDecoration(
                     color:
-                        AppColors.textPrimary,
+                        AppColors.surface,
+                    borderRadius:
+                        BorderRadius
+                            .circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black
+                            .withValues(
+                          alpha: 0.05,
+                        ),
+                        blurRadius: 15,
+                        offset:
+                            const Offset(
+                          0,
+                          6,
+                        ),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 38,
+                        backgroundColor:
+                            AppColors.primary
+                                .withValues(
+                          alpha: 0.2,
+                        ),
+                        child: const Icon(
+                          Icons
+                              .bug_report_outlined,
+                          size: 42,
+                          color: AppColors
+                              .primaryDark,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 16),
+
+                      const Text(
+                        "Describe the Issue",
+                        textAlign:
+                            TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight:
+                              FontWeight
+                                  .bold,
+                          color: AppColors
+                              .textPrimary,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 8),
+
+                      const Text(
+                        "Help us understand what happened and how we can improve.",
+                        textAlign:
+                            TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors
+                              .textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 8),
-
-                const Text(
-                  "Tell us what happened and how we can reproduce it.",
-                  style: TextStyle(
-                    color:
-                        AppColors.textSecondary,
-                  ),
-                ),
-
-                const SizedBox(height: 30),
+                const SizedBox(height: 28),
 
                 TextFormField(
                   controller:
                       _titleController,
                   validator: (value) {
                     if (value == null ||
-                        value.trim().isEmpty) {
+                        value.trim()
+                            .isEmpty) {
                       return "Issue title is required";
                     }
-
                     return null;
                   },
                   decoration:
@@ -166,17 +209,22 @@ class _BugDescriptionScreenState
                     prefixIcon:
                         const Icon(
                       Icons
-                          .bug_report_outlined,
+                          .title_outlined,
                     ),
                     filled: true,
                     fillColor:
                         AppColors.surface,
+                    contentPadding:
+                        const EdgeInsets
+                            .symmetric(
+                      vertical: 18,
+                    ),
                     border:
                         OutlineInputBorder(
                       borderRadius:
                           BorderRadius
                               .circular(
-                        16,
+                        18,
                       ),
                       borderSide:
                           BorderSide.none,
@@ -186,44 +234,43 @@ class _BugDescriptionScreenState
 
                 const SizedBox(height: 20),
 
-                Expanded(
-                  child: TextFormField(
-                    controller:
-                        _descriptionController,
-                    maxLines: null,
-                    expands: true,
-                    validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
-                        return "Description is required";
-                      }
-
-                      return null;
-                    },
-                    decoration:
-                        InputDecoration(
-                      alignLabelWithHint:
-                          true,
-                      labelText:
-                          "Describe the issue in detail...",
-                      filled: true,
-                      fillColor:
-                          AppColors.surface,
-                      border:
-                          OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius
-                                .circular(
-                          16,
-                        ),
-                        borderSide:
-                            BorderSide.none,
+                TextFormField(
+                  controller:
+                      _descriptionController,
+                  maxLines: 8,
+                  validator: (value) {
+                    if (value == null ||
+                        value.trim()
+                            .isEmpty) {
+                      return "Description is required";
+                    }
+                    return null;
+                  },
+                  decoration:
+                      InputDecoration(
+                    labelText:
+                        "Describe the issue in detail",
+                    alignLabelWithHint:
+                        true,
+                    filled: true,
+                    fillColor:
+                        AppColors.surface,
+                    hintText:
+                        "Explain what happened, what you expected, and any additional information...",
+                    border:
+                        OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius
+                              .circular(
+                        18,
                       ),
+                      borderSide:
+                          BorderSide.none,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
 
                 SizedBox(
                   width:
@@ -242,12 +289,13 @@ class _BugDescriptionScreenState
                       foregroundColor:
                           AppColors
                               .textPrimary,
+                      elevation: 0,
                       shape:
                           RoundedRectangleBorder(
                         borderRadius:
                             BorderRadius
                                 .circular(
-                          16,
+                          18,
                         ),
                       ),
                     ),
@@ -268,6 +316,33 @@ class _BugDescriptionScreenState
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _stepCircle(
+      bool isActive) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration:
+          BoxDecoration(
+        shape: BoxShape.circle,
+        color: isActive
+            ? AppColors.primary
+            : Colors.grey.shade300,
+      ),
+    );
+  }
+
+  Widget _stepLine(
+      bool isActive) {
+    return Expanded(
+      child: Container(
+        height: 4,
+        color: isActive
+            ? AppColors.primary
+            : Colors.grey.shade300,
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,27 +47,20 @@ class _MediaCollectionScreenState
     final feedback = FeedbackModel(
       loginType:
           FeedbackDraft.loginType,
-
       name: FeedbackDraft.name,
       email: FeedbackDraft.email,
       mobile: FeedbackDraft.mobile,
-
       issueTitle:
           FeedbackDraft.issueTitle,
-
       issueDescription:
           FeedbackDraft.issueDescription,
-
       imagePath:
           FeedbackDraft.imagePath,
-
       videoPath:
           FeedbackDraft.videoPath,
-
       createdAt: DateTime.now(),
     );
 
-  
     context.read<FeedbackBloc>().add(
           SubmitFeedbackEvent(
             feedback,
@@ -90,17 +85,7 @@ class _MediaCollectionScreenState
       appBar: AppBar(
         backgroundColor:
             AppColors.background,
-        centerTitle: true,
         elevation: 0,
-        title: const Text(
-          "Attach Media",
-          style: TextStyle(
-            color:
-                AppColors.textPrimary,
-            fontWeight:
-                FontWeight.w600,
-          ),
-        ),
       ),
 
       body: Padding(
@@ -120,116 +105,236 @@ class _MediaCollectionScreenState
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 14),
 
-            ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(
-                10,
-              ),
-              child:
-                  const LinearProgressIndicator(
-                value: 0.75,
-                minHeight: 8,
-                backgroundColor:
-                    Color(
-                  0xFFEAEAEA,
-                ),
-                color:
-                    AppColors.primary,
-              ),
+            Row(
+              children: [
+                _stepCircle(true),
+                _stepLine(true),
+                _stepCircle(true),
+                _stepLine(true),
+                _stepCircle(true),
+                _stepLine(false),
+                _stepCircle(false),
+              ],
             ),
 
             const SizedBox(height: 30),
 
-            const Text(
-              "Attach Screenshots",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight:
-                    FontWeight.bold,
-                color:
-                    AppColors.textPrimary,
+            Container(
+              width: double.infinity,
+              padding:
+                  const EdgeInsets.all(
+                24,
               ),
-            ),
-
-            const SizedBox(height: 8),
-
-            const Text(
-              "Images help us understand the issue faster.",
-              style: TextStyle(
+              decoration:
+                  BoxDecoration(
                 color:
-                    AppColors.textSecondary,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            GestureDetector(
-              onTap: pickImage,
-              child: Container(
-                height: 220,
-                width: double.infinity,
-                decoration:
-                    BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius
-                          .circular(
-                    20,
+                    AppColors.surface,
+                borderRadius:
+                    BorderRadius
+                        .circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black
+                        .withValues(
+                      alpha: 0.05,
+                    ),
+                    blurRadius: 15,
+                    offset:
+                        const Offset(
+                      0,
+                      6,
+                    ),
                   ),
-                  border: Border.all(
+                ],
+              ),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 38,
+                    backgroundColor:
+                        AppColors.primary
+                            .withValues(
+                      alpha: 0.2,
+                    ),
+                    child: const Icon(
+                      Icons.photo_camera,
+                      size: 42,
+                      color: AppColors
+                          .primaryDark,
+                    ),
+                  ),
+
+                  const SizedBox(
+                      height: 16),
+
+                  const Text(
+                    "Attach Media",
+                    textAlign:
+                        TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight:
+                          FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(
+                      height: 8),
+
+                  const Text(
+                    "Screenshots help us understand issues faster and improve the experience.",
+                    textAlign:
+                        TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors
+                          .textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 28),
+
+            Expanded(
+              child: GestureDetector(
+                onTap: pickImage,
+                child: Container(
+                  width:
+                      double.infinity,
+                  decoration:
+                      BoxDecoration(
                     color:
-                        AppColors.primary,
-                    width: 2,
+                        Colors.white,
+                    borderRadius:
+                        BorderRadius
+                            .circular(
+                      24,
+                    ),
+                    border:
+                        Border.all(
+                      color:
+                          AppColors
+                              .primary,
+                      width: 2,
+                    ),
                   ),
+                  child:
+                      selectedImage ==
+                              null
+                          ? Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .center,
+                              children: const [
+                                Icon(
+                                  Icons
+                                      .cloud_upload_outlined,
+                                  size:
+                                      70,
+                                  color:
+                                      AppColors.primaryDark,
+                                ),
+                                SizedBox(
+                                    height:
+                                        20),
+                                Text(
+                                  "Tap to Upload",
+                                  style:
+                                      TextStyle(
+                                    fontSize:
+                                        20,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(
+                                    height:
+                                        8),
+                                Text(
+                                  "PNG, JPG or JPEG",
+                                  style:
+                                      TextStyle(
+                                    color:
+                                        AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : ClipRRect(
+                              borderRadius:
+                                  BorderRadius.circular(
+                                24,
+                              ),
+                              child:
+                                  Stack(
+                                fit: StackFit
+                                    .expand,
+                                children: [
+                                  Image.file(
+                                    File(
+                                      selectedImage!
+                                          .path,
+                                    ),
+                                    fit: BoxFit
+                                        .cover,
+                                  ),
+                                  Positioned(
+                                    right:
+                                        12,
+                                    top:
+                                        12,
+                                    child:
+                                        Container(
+                                      padding:
+                                          const EdgeInsets
+                                              .all(
+                                        8,
+                                      ),
+                                      decoration:
+                                          const BoxDecoration(
+                                        color:
+                                            AppColors.success,
+                                        shape:
+                                            BoxShape.circle,
+                                      ),
+                                      child:
+                                          const Icon(
+                                        Icons
+                                            .check,
+                                        color:
+                                            Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                 ),
-                child: selectedImage ==
-                        null
-                    ? const Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment
-                                .center,
-                        children: [
-                          Icon(
-                            Icons
-                                .cloud_upload_outlined,
-                            size: 50,
-                            color:
-                                AppColors.primaryDark,
-                          ),
-                          SizedBox(
-                              height: 10),
-                          Text(
-                            "Tap to upload image",
-                          ),
-                        ],
-                      )
-                    : const Center(
-                        child: Text(
-                          "Image Selected ✓",
-                          style:
-                              TextStyle(
-                            color:
-                                AppColors.success,
-                            fontWeight:
-                                FontWeight.bold,
-                          ),
-                        ),
-                      ),
               ),
             ),
 
-            const Spacer(),
+            const SizedBox(height: 24),
 
             SizedBox(
               width:
                   double.infinity,
               height: 58,
               child:
-                  ElevatedButton(
+                  ElevatedButton.icon(
                 onPressed:
                     submitFeedback,
+                icon:
+                    const Icon(
+                  Icons.send,
+                ),
+                label:
+                    const Text(
+                  "Submit Feedback",
+                ),
                 style:
                     ElevatedButton
                         .styleFrom(
@@ -238,30 +343,47 @@ class _MediaCollectionScreenState
                   foregroundColor:
                       AppColors
                           .textPrimary,
+                  elevation: 0,
                   shape:
                       RoundedRectangleBorder(
                     borderRadius:
                         BorderRadius
                             .circular(
-                      16,
+                      18,
                     ),
-                  ),
-                ),
-                child:
-                    const Text(
-                  "Submit Feedback",
-                  style:
-                      TextStyle(
-                    fontSize: 16,
-                    fontWeight:
-                        FontWeight
-                            .w600,
                   ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _stepCircle(
+      bool active) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration:
+          BoxDecoration(
+        shape: BoxShape.circle,
+        color: active
+            ? AppColors.primary
+            : Colors.grey.shade300,
+      ),
+    );
+  }
+
+  Widget _stepLine(
+      bool active) {
+    return Expanded(
+      child: Container(
+        height: 4,
+        color: active
+            ? AppColors.primary
+            : Colors.grey.shade300,
       ),
     );
   }

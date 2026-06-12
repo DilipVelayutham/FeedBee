@@ -81,22 +81,12 @@ class _UserDetailsScreenState
         backgroundColor:
             AppColors.background,
         elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "User Details",
-          style: TextStyle(
-            color:
-                AppColors.textPrimary,
-            fontWeight:
-                FontWeight.w600,
-          ),
-        ),
       ),
 
       body: SafeArea(
         child: Form(
           key: _formKey,
-          child: Padding(
+          child: SingleChildScrollView(
             padding:
                 const EdgeInsets.all(24),
             child: Column(
@@ -113,50 +103,102 @@ class _UserDetailsScreenState
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
 
-                ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(
-                    10,
-                  ),
-                  child:
-                      const LinearProgressIndicator(
-                    value: 0.25,
-                    minHeight: 8,
-                    backgroundColor:
-                        Color(
-                      0xFFEAEAEA,
-                    ),
-                    color:
-                        AppColors.primary,
-                  ),
+                Row(
+                  children: [
+                    _stepCircle(true),
+                    _stepLine(),
+                    _stepCircle(false),
+                    _stepLine(),
+                    _stepCircle(false),
+                    _stepLine(),
+                    _stepCircle(false),
+                  ],
                 ),
 
                 const SizedBox(height: 30),
 
-                const Text(
-                  "Tell us about yourself",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight:
-                        FontWeight.bold,
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.all(
+                    24,
+                  ),
+                  decoration:
+                      BoxDecoration(
                     color:
-                        AppColors.textPrimary,
+                        AppColors.surface,
+                    borderRadius:
+                        BorderRadius
+                            .circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black
+                            .withValues(
+                          alpha: 0.05,
+                        ),
+                        blurRadius: 15,
+                        offset:
+                            const Offset(
+                          0,
+                          6,
+                        ),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 38,
+                        backgroundColor:
+                            AppColors.primary
+                                .withValues(
+                          alpha: 0.2,
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          size: 42,
+                          color: AppColors
+                              .primaryDark,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 16),
+
+                      const Text(
+                        "Tell us about yourself",
+                        textAlign:
+                            TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight:
+                              FontWeight
+                                  .bold,
+                          color: AppColors
+                              .textPrimary,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 8),
+
+                      const Text(
+                        "We need a few details before collecting feedback.",
+                        textAlign:
+                            TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors
+                              .textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 8),
-
-                const Text(
-                  "We need some details before collecting feedback.",
-                  style: TextStyle(
-                    color:
-                        AppColors.textSecondary,
-                  ),
-                ),
-
-                const SizedBox(height: 30),
+                const SizedBox(height: 28),
 
                 _buildTextField(
                   controller:
@@ -194,7 +236,7 @@ class _UserDetailsScreenState
                       TextInputType.phone,
                 ),
 
-                const Spacer(),
+                const SizedBox(height: 40),
 
                 SizedBox(
                   width:
@@ -213,12 +255,13 @@ class _UserDetailsScreenState
                       foregroundColor:
                           AppColors
                               .textPrimary,
+                      elevation: 0,
                       shape:
                           RoundedRectangleBorder(
                         borderRadius:
                             BorderRadius
                                 .circular(
-                          16,
+                          18,
                         ),
                       ),
                     ),
@@ -227,10 +270,10 @@ class _UserDetailsScreenState
                       "Continue",
                       style:
                           TextStyle(
+                        fontSize: 16,
                         fontWeight:
                             FontWeight
                                 .w600,
-                        fontSize: 16,
                       ),
                     ),
                   ),
@@ -239,6 +282,30 @@ class _UserDetailsScreenState
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _stepCircle(
+      bool isActive) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration:
+          BoxDecoration(
+        shape: BoxShape.circle,
+        color: isActive
+            ? AppColors.primary
+            : Colors.grey.shade300,
+      ),
+    );
+  }
+
+  Widget _stepLine() {
+    return Expanded(
+      child: Container(
+        height: 4,
+        color: Colors.grey.shade300,
       ),
     );
   }
@@ -260,7 +327,6 @@ class _UserDetailsScreenState
             value.trim().isEmpty) {
           return 'Required field';
         }
-
         return null;
       },
       decoration: InputDecoration(
@@ -269,11 +335,15 @@ class _UserDetailsScreenState
         filled: true,
         fillColor:
             AppColors.surface,
+        contentPadding:
+            const EdgeInsets.symmetric(
+          vertical: 18,
+        ),
         border:
             OutlineInputBorder(
           borderRadius:
               BorderRadius.circular(
-            16,
+            18,
           ),
           borderSide:
               BorderSide.none,

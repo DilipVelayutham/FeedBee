@@ -7,8 +7,7 @@ import 'firebase_options.dart';
 import 'di/service_locator.dart';
 
 import 'presentation/bloc/feedback/feedback_bloc.dart';
-
-import 'presentation/screens/auth/login_screen.dart';
+import 'presentation/screens/splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +37,7 @@ class FeedBeeApp extends StatelessWidget {
       child: MaterialApp(
         title: 'FeedBee',
         debugShowCheckedModeBanner: false,
-        home: const LoginScreen(),
+        home: const SplashScreen(),
       ),
     );
   }
