@@ -1,17 +1,50 @@
-# feedbee
+# FeedBee
 
-A new Flutter project.
+FeedBee is a Flutter-based bug feedback collection application that allows users to authenticate, submit issue reports with media attachments, and securely manage feedback data.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Google Sign-In and Email Authentication
+- Bug and Feedback Collection
+- Image and Video Attachments
+- SQLite Local Storage
+- Feedback History
+- Biometric Authentication for Export
+- Modern Multi-Step User Interface
 
-A few resources to get you started if this is your first Flutter project:
+## Technologies Used
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Flutter
+- Dart
+- Firebase Authentication
+- SQLite (sqflite)
+- BLoC Architecture
+- Local Authentication
+- Image Picker
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Design Choices
+
+- Multi-step Feedback Process
+- Clean and Minimal UI
+- Modular Application Structure
+- State Management
+
+## Challenges Faced
+
+- Firebase Authentication Integration
+- Dependency Management
+- Android Build Configuration
+- CSV Export Storage Integration
+
+## Future Improvements
+
+- Complete CSV Export Storage Support
+- Firebase Firestore Integration
+- Admin Dashboard
+- Advanced Analytics
+- Real-Time Synchronization
+
+## Developer
+
+**Dilip Velayutham**  
+Chennai, India

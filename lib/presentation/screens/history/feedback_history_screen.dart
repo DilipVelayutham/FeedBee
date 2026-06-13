@@ -5,6 +5,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../data/models/feedback_model.dart';
 import '../../../data/repositories/feedback_repository.dart';
 
+import '../../../core/services/csv_export_service.dart';
+import '../../../core/services/biometric_service.dart';
+
 import '../../../di/service_locator.dart';
 
 import '../auth/login_screen.dart';
@@ -52,6 +55,62 @@ class _FeedbackHistoryScreenState
     await loadFeedbacks();
   }
 
+  Future<void> _exportCsv() async {
+    try {
+      final feedbacks =
+          await repository.getAllFeedbacks();
+
+      final file =
+          await CsvExportService()
+              .exportFeedbacks(
+        feedbacks,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        SnackBar(
+          content: Text(
+            'CSV exported: ${file.path}',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        SnackBar(
+          content: Text(
+            'Export failed: $e',
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _authenticateAndExport() async {
+    final authenticated =
+        await BiometricService()
+            .authenticate();
+
+    if (!mounted) return;
+
+    if (authenticated) {
+      _exportCsv();
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Biometric authentication failed',
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,14 +123,24 @@ class _FeedbackHistoryScreenState
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Feedback History',
+          'FeedBee History',
           style: TextStyle(
             color:
                 AppColors.textPrimary,
             fontWeight:
-                FontWeight.w600,
+                FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Export CSV',
+            icon: const Icon(
+              Icons.download,
+            ),
+            onPressed:
+                _authenticateAndExport,
+          ),
+        ],
       ),
 
       body: isLoading
@@ -84,124 +153,93 @@ class _FeedbackHistoryScreenState
               : RefreshIndicator(
                   onRefresh:
                       refreshData,
-                  child: ListView.builder(
+                  child: ListView(
                     padding:
                         const EdgeInsets.all(
                       16,
                     ),
-                    itemCount:
-                        feedbacks.length,
-                    itemBuilder:
-                        (context, index) {
-                      final item =
-                          feedbacks[index];
-
-                      return Card(
-                        elevation: 2,
-                        margin:
-                            const EdgeInsets.only(
-                          bottom: 14,
+                    children: [
+                      Container(
+                        padding:
+                            const EdgeInsets.all(
+                          20,
                         ),
-                        shape:
-                            RoundedRectangleBorder(
+                        decoration:
+                            BoxDecoration(
+                          color:
+                              AppColors.surface,
                           borderRadius:
                               BorderRadius
                                   .circular(
-                            16,
+                            24,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black
+                                  .withValues(
+                                alpha: 0.04,
+                              ),
+                              blurRadius:
+                                  12,
+                              offset:
+                                  const Offset(
+                                0,
+                                4,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.all(
-                            16,
-                          ),
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
-                            children: [
-                              Text(
-                                item.issueTitle,
-                                style:
-                                    const TextStyle(
-                                  fontSize:
-                                      18,
-                                  fontWeight:
-                                      FontWeight
-                                          .bold,
-                                ),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundColor:
+                                  AppColors
+                                      .primary
+                                      .withValues(
+                                alpha: 0.15,
                               ),
-
-                              const SizedBox(
-                                  height:
-                                      8),
-
-                              Text(
-                                item.issueDescription,
+                              child:
+                                  const Icon(
+                                Icons
+                                    .analytics_outlined,
+                                color: AppColors
+                                    .primaryDark,
+                                size: 30,
                               ),
+                            ),
 
-                              const SizedBox(
-                                  height:
-                                      12),
+                            const SizedBox(
+                                height: 12),
 
-                              const Divider(),
-
-                              Text(
-                                'Name: ${item.name}',
+                            Text(
+                              '${feedbacks.length}',
+                              style:
+                                  const TextStyle(
+                                fontSize: 32,
+                                fontWeight:
+                                    FontWeight
+                                        .bold,
                               ),
+                            ),
 
-                              Text(
-                                'Email: ${item.email}',
-                              ),
-
-                              Text(
-                                'Mobile: ${item.mobile}',
-                              ),
-
-                              const SizedBox(
-                                  height:
-                                      8),
-
-                              Container(
-                                padding:
-                                    const EdgeInsets
-                                        .symmetric(
-                                  horizontal:
-                                      10,
-                                  vertical:
-                                      5,
-                                ),
-                                decoration:
-                                    BoxDecoration(
-                                  color:
-                                      AppColors
-                                          .primary
-                                          .withValues(
-                                    alpha:
-                                        0.15,
-                                  ),
-                                  borderRadius:
-                                      BorderRadius
-                                          .circular(
-                                    12,
-                                  ),
-                                ),
-                                child: Text(
-                                  item.loginType
-                                      .toUpperCase(),
-                                  style:
-                                      const TextStyle(
-                                    fontWeight:
-                                        FontWeight
-                                            .w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            const Text(
+                              'Total Feedback Reports',
+                            ),
+                          ],
                         ),
-                      );
-                    },
+                      ),
+
+                      const SizedBox(
+                          height: 18),
+
+                      ...feedbacks.map(
+                        (item) =>
+                            _buildFeedbackCard(
+                          item,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -210,8 +248,9 @@ class _FeedbackHistoryScreenState
         padding:
             const EdgeInsets.all(16),
         child: SizedBox(
-          height: 56,
-          child: ElevatedButton.icon(
+          height: 58,
+          child:
+              ElevatedButton.icon(
             icon: const Icon(
               Icons.home_outlined,
             ),
@@ -230,7 +269,7 @@ class _FeedbackHistoryScreenState
                 borderRadius:
                     BorderRadius
                         .circular(
-                  16,
+                  18,
                 ),
               ),
             ),
@@ -250,6 +289,153 @@ class _FeedbackHistoryScreenState
     );
   }
 
+  Widget _buildFeedbackCard(
+    FeedbackModel item,
+  ) {
+    return Container(
+      margin:
+          const EdgeInsets.only(
+        bottom: 16,
+      ),
+      padding:
+          const EdgeInsets.all(
+        18,
+      ),
+      decoration:
+          BoxDecoration(
+        color:
+            AppColors.surface,
+        borderRadius:
+            BorderRadius.circular(
+          20,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color:
+                Colors.black.withValues(
+              alpha: 0.04,
+            ),
+            blurRadius: 10,
+            offset:
+                const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          Text(
+            item.issueTitle,
+            style:
+                const TextStyle(
+              fontSize: 18,
+              fontWeight:
+                  FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(
+              height: 10),
+
+          Text(
+            item.issueDescription,
+          ),
+
+          const SizedBox(
+              height: 16),
+
+          Row(
+            children: [
+              const Icon(
+                Icons.person_outline,
+                size: 18,
+              ),
+              const SizedBox(
+                  width: 6),
+              Expanded(
+                child:
+                    Text(item.name),
+              ),
+            ],
+          ),
+
+          const SizedBox(
+              height: 8),
+
+          Row(
+            children: [
+              const Icon(
+                Icons.email_outlined,
+                size: 18,
+              ),
+              const SizedBox(
+                  width: 6),
+              Expanded(
+                child:
+                    Text(item.email),
+              ),
+            ],
+          ),
+
+          const SizedBox(
+              height: 8),
+
+          Row(
+            children: [
+              const Icon(
+                Icons.phone_outlined,
+                size: 18,
+              ),
+              const SizedBox(
+                  width: 6),
+              Expanded(
+                child:
+                    Text(item.mobile),
+              ),
+            ],
+          ),
+
+          const SizedBox(
+              height: 14),
+
+          Container(
+            padding:
+                const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 6,
+            ),
+            decoration:
+                BoxDecoration(
+              color:
+                  AppColors.primary
+                      .withValues(
+                alpha: 0.15,
+              ),
+              borderRadius:
+                  BorderRadius
+                      .circular(
+                20,
+              ),
+            ),
+            child: Text(
+              item.loginType
+                          .toLowerCase() ==
+                      'google'
+                  ? 'Google User'
+                  : 'Email User',
+              style:
+                  const TextStyle(
+                fontWeight:
+                    FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
@@ -259,11 +445,9 @@ class _FeedbackHistoryScreenState
           mainAxisAlignment:
               MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.inbox_outlined,
-              size: 80,
-              color:
-                  AppColors.textSecondary,
+            Image.asset(
+              'assets/logo/feedbee_logo1.png',
+              height: 90,
             ),
 
             const SizedBox(
@@ -282,7 +466,7 @@ class _FeedbackHistoryScreenState
                 height: 8),
 
             const Text(
-              'Submit some feedback and it will appear here.',
+              'Submit feedback and it will appear here.',
               textAlign:
                   TextAlign.center,
             ),
